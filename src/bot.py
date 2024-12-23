@@ -1,4 +1,4 @@
-from src.commands import exit_bot, start_bot, add_contact, change_contact, show_phone, show_all
+from src.commands import exit_bot, start_bot, add_contact, change_contact, show_phone, show_all, add_birthday, show_birthday, birthdays
 from src.parser import parse_input
 from src.decorator.colorize_message import colorize_message
 from src.decorator.input_error import input_error
@@ -28,5 +28,11 @@ def bot():
             print(show_phone(args, contacts))
         elif command == "all":
             print(show_all(contacts))
+        elif command == "add-birthday":
+            print(add_birthday(args, contacts))
+        elif command == "show-birthday":
+            print(show_birthday(args, contacts))
+        elif command == "birthdays":
+            print(birthdays(args, contacts))
         else:
             print(messages_error["invalid"])

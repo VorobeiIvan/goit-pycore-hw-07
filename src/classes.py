@@ -1,4 +1,7 @@
+from datetime import datetime
 from collections import UserDict
+from datetime import timedelta
+
 
 # Базовий клас для полів запису
 class Field:
@@ -22,15 +25,23 @@ class Phone(Field):
             raise ValueError("Phone number must contain exactly 10 digits.")
         super().__init__(value)
 
+
+class Birthday(Field):
+    def __init__(self, value: str):
+        try:
+            self.value = datetime.strptime(value, "%d.%m.%Y").date()
+        except ValueError:
+            raise ValueError("Invalid date format. Use DD.MM.YYYY")
+
 # Клас для зберігання інформації про контакт
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
+        self.birthday = None
 
-    def add_phone(self, phone):
+    def add_phone(self, phone: str):
         self.phones.append(Phone(phone))
-
     def remove_phone(self, phone):
         for p in self.phones:
             if p.value == phone:
@@ -55,6 +66,15 @@ class Record:
         phones = "; ".join(p.value for p in self.phones)
         return f"Contact name: {self.name.value}, phones: {phones}"
 
+    def add_birthday(self, birthday: Birthday):
+        self.birthday = birthday
+
+    def __str__(self):
+        phones = ", ".join([phone.value for phone in self.phones])
+        birthday = self.birthday.value if self.birthday else "No birthday"
+        return f"{self.name}: {phones}, Birthday: {birthday}"
+
+
 # Клас для управління записами
 class AddressBook(UserDict):
     def add_record(self, record):
@@ -70,3 +90,12 @@ class AddressBook(UserDict):
             del self.data[name]
         else:
             raise ValueError(f"Record with name {name} not found.")
+
+    def get_upcoming_birthdays(self):
+        today = datetime.today().date()
+        next_week = today + timedelta(days=7)
+        upcoming = []
+        for record in self.data.values():
+            if record.birthday and today <= record.birthday.value <= next_week:
+                upcoming.append(record)
+        return upcoming

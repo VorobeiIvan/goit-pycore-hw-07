@@ -1,7 +1,8 @@
-from src.decorator.colorize_message import colorize_message  
+from src.decorator.colorize_message import colorize_message
 from src.decorator.input_error import input_error
 from src.constants import messages_error, messages
-from src.classes import AddressBook, Record
+from src.classes import AddressBook, Record, Birthday
+from datetime import datetime, timedelta
 
 @colorize_message
 @input_error
@@ -47,6 +48,44 @@ def show_all(contacts):
     if not contacts:
         return messages_error["no_contacts"]
     return "\n".join(str(record) for record in contacts.data.values())
+
+@colorize_message
+@input_error
+def add_birthday(args, contacts):
+    """Додає день народження до контакту."""
+    if len(args) != 2:
+        return messages_error["usage_add_birthday"]
+    name, birthday = args
+    try:
+        birthday_obj = Birthday(birthday)
+    except ValueError:
+        return messages_error["value_error"]
+    contact = contacts.find(name)
+    if contact:
+        contact.add_birthday(birthday_obj)
+        return f"Birthday for {name} added: {birthday_obj.value}"
+    return messages_error["not_found"]
+
+@colorize_message
+@input_error
+def show_birthday(args, contacts):
+    """Показує день народження для контакту."""
+    if len(args) != 1:
+        return messages_error["usage_show_birthday"]
+    name = args[0]
+    contact = contacts.find(name)
+    if contact and contact.birthday:
+        return f"{name}'s birthday is on {contact.birthday.value}"
+    return messages_error["not_found"]
+
+@colorize_message
+@input_error
+def birthdays(args, contacts):
+    """Показує дні народження, які відбудуться наступного тижня."""
+    upcoming_birthdays = contacts.get_upcoming_birthdays()
+    if not upcoming_birthdays:
+        return "No birthdays this week."
+    return "\n".join(f"{contact.name}'s birthday is on {contact.birthday.value}" for contact in upcoming_birthdays)
 
 @colorize_message
 def start_bot():
