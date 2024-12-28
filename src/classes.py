@@ -91,22 +91,22 @@ class AddressBook(UserDict):
         else:
             raise ValueError(f"Record with name {name} not found.")
 
-def get_upcoming_birthdays(self):
-    """Повертає список контактів, у яких день народження протягом наступного тижня."""
-    today = datetime.today().date()
-    next_week = today + timedelta(days=7)
-    upcoming = []
+    def get_upcoming_birthdays(self):
+        """Повертає список контактів, у яких день народження протягом наступного тижня."""
+        today = datetime.today().date()
+        next_week = today + timedelta(days=7)
+        upcoming = []
 
-    for record in self.data.values():
-        if record.birthday:
-            # Переносимо день народження на поточний рік
-            birthday_this_year = record.birthday.value.replace(year=today.year)
-            # Якщо день народження вже був цього року, переносимо на наступний рік
-            if birthday_this_year < today:
-                birthday_this_year = birthday_this_year.replace(year=today.year + 1)
+        for record in self.data.values():
+            if record.birthday:
+                # Переносимо день народження на поточний рік
+                birthday_this_year = record.birthday.value.replace(year=today.year)
+                # Якщо день народження вже був цього року, переносимо на наступний рік
+                if birthday_this_year < today:
+                    birthday_this_year = birthday_this_year.replace(year=today.year + 1)
 
-            if today <= birthday_this_year <= next_week:
-                upcoming.append(record)
+                if today <= birthday_this_year <= next_week:
+                    upcoming.append(record)
 
-    return upcoming
+        return upcoming
 
